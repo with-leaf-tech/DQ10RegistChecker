@@ -131,7 +131,7 @@ namespace DQ10RegistChecker {
 
             return (resultList2, betterList, maxCountList);
         }
-        /*
+
         public List<Dictionary<string, int>> GetDistinctList(List<Dictionary<string, int>> list) {
             List<string> checkList = new List<string>();
             List<string> returnList = new List<string>();
@@ -145,7 +145,8 @@ namespace DQ10RegistChecker {
             }
             return returnList.Select(x => JsonToDic(x)).ToList();
         }
-        */
+
+        /*
         public List<Dictionary<string, int>> GetDistinctList(List<Dictionary<string, int>> list) {
             List<Dictionary<string, int>> checkList = new List<Dictionary<string, int>>();
             for (int i = 0; i < list.Count; i++) {
@@ -169,6 +170,7 @@ namespace DQ10RegistChecker {
             }
             return checkList;
         }
+        */
         public string DicToJson(object obj) {
             return JsonConvert.SerializeObject(obj, Formatting.Indented);
         }
