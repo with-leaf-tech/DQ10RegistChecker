@@ -8,8 +8,9 @@ using System.Threading.Tasks;
 namespace DQ10RegistChecker {
     public class CombinationRegist {
 
-        public (List<Dictionary<string, string>>, List<Dictionary<string, string>>) GetBestRegistEquip(List<RegistSet> setList) {
+        public (List<Dictionary<string, string>>, List<Dictionary<string, string>>) GetBestRegistEquip(List<RegistSet> setList, List<string> allParts) {
             List<List<Dictionary<string, int>>> allList = new List<List<Dictionary<string, int>>>();
+            /*
             List<string> allParts = new List<string>();
 
             string[][][] partsList = setList.Select(x => x.RegistEntityList.Select(y => y.getRegistData().Item2).ToArray()).ToArray();
@@ -19,9 +20,9 @@ namespace DQ10RegistChecker {
                 }
             }
             allParts = allParts.Distinct().ToList();
-
+            */
             for (int i = 0; i < setList.Count; i++) {
-                allList.Add(GetDistinctList(GetCombination(setList[i].RegistEntityList.Select(x => x.getRegistData()).ToArray()).Item2));
+                allList.Add(GetDistinctList(GetCombination(setList[i].RegistEntityList.Select(x => x.getRegistData()).ToArray()).Item1));
             }
 
             List<Dictionary<string, int>> sumList = new List<Dictionary<string, int>>();
@@ -86,8 +87,10 @@ namespace DQ10RegistChecker {
             sumList = GetDistinctList(sumList);
 
             (List<Dictionary<string, int>> resultList2, List<Dictionary<string, int>> betterList, List<int> maxCountList) = GetBetterList(sumList);
-
-            return (sumList, betterList, maxCountList);
+            //if(resultList2.Count == 0) {
+                resultList2 = GetDistinctList(betterList);
+            //}
+            return (sumList, resultList2, maxCountList);
         }
 
         public (List<Dictionary<string, int>>, List<Dictionary<string, int>>, List<int>) GetBetterList(List<Dictionary<string, int>> sumList) {
@@ -123,21 +126,26 @@ namespace DQ10RegistChecker {
             for (int i = 0; i < betterIndexList.Count; i++) {
                 betterList.Add(sumList[betterIndexList[i]]);
             }
+            resultList2 = GetDistinctList(resultList2);
+            betterList = GetDistinctList(betterList);
 
             return (resultList2, betterList, maxCountList);
         }
-
+        /*
         public List<Dictionary<string, int>> GetDistinctList(List<Dictionary<string, int>> list) {
             List<string> checkList = new List<string>();
+            List<string> returnList = new List<string>();
             for (int i = 0; i < list.Count; i++) {
-                string lineJson = DicToJson(list[i]);
+                string lineJson = DicToJson(list[i].Where(x => x.Value != 0));
+                string returnJson = DicToJson(list[i]);
                 if (!checkList.Contains(lineJson)) {
                     checkList.Add(lineJson);
+                    returnList.Add(returnJson);
                 }
             }
-            return checkList.Select(x => JsonToDic(x)).ToList();
+            return returnList.Select(x => JsonToDic(x)).ToList();
         }
-        /*
+        */
         public List<Dictionary<string, int>> GetDistinctList(List<Dictionary<string, int>> list) {
             List<Dictionary<string, int>> checkList = new List<Dictionary<string, int>>();
             for (int i = 0; i < list.Count; i++) {
@@ -161,8 +169,6 @@ namespace DQ10RegistChecker {
             }
             return checkList;
         }
-        */
-
         public string DicToJson(object obj) {
             return JsonConvert.SerializeObject(obj, Formatting.Indented);
         }

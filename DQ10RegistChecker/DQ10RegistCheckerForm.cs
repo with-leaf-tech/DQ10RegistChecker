@@ -16,23 +16,32 @@ namespace DQ10RegistChecker {
         public DQ10RegistCheckerForm() {
             InitializeComponent();
 
-            checkedListBox1.Items.AddRange(Const.REGISTSET_LIST.Select(x => x.Name.PadLeft(10, '　') + "\t" + string.Join(",",x.RegistEntityList.Select(y => y.Name).ToArray())).ToArray());
-
+            checkedListBox1.Items.AddRange(Const.REGISTSET_LIST.Select(x => x.Name.PadRight(10 - (Encoding.GetEncoding("Shift_JIS").GetByteCount(x.Name) - x.Name.Length)) + "\t" + string.Join(",",x.RegistEntityList.Select(y => y.Name).ToArray())).ToArray());
             checkedListBox2.Items.AddRange(Const.REGIST_LIST.Select(x => x.name).ToArray());
-
         }
 
         private void button1_Click(object sender, EventArgs e) {
             seraching = true;
             CombinationRegist combination = new CombinationRegist();
             List<RegistSet> registsetList = new List<RegistSet>();
+            List<string> allPartsList = new List<string>();
             CheckedListBox.CheckedItemCollection list = checkedListBox1.CheckedItems;
             for(int i = 0; i < list.Count; i++) {
-                string name = list[i].ToString().Split(new char[] { '\t'})[0].Replace("　", "");
+                string name = list[i].ToString().Split(new char[] { '\t'})[0].Replace(" ", "");
                 registsetList.Add(Const.REGISTSET_LIST.Where(x => x.Name == name).First());
             }
-            (List<Dictionary<string, string>> bestList, List<Dictionary<string, string>> betterList) ret = combination.GetBestRegistEquip(registsetList);
-            DisplayResult(ret.betterList);
+            List<List<string[]>> partsList = registsetList.Select(x => x.RegistEntityList.Select(y => y.Parts).ToList()).ToList();
+            for(int i = 0; i < partsList.Count; i++) {
+                for(int j = 0; j < partsList[i].Count; j++) {
+                    allPartsList.AddRange(partsList[i][j]);
+                }
+            }
+            allPartsList = allPartsList.Distinct().ToList();
+
+            if (registsetList.Count > 0) {
+                (List<Dictionary<string, string>> bestList, List<Dictionary<string, string>> betterList) ret = combination.GetBestRegistEquip(registsetList, allPartsList);
+                DisplayResult(ret.betterList);
+            }
             seraching = false;
         }
 
@@ -47,10 +56,22 @@ namespace DQ10RegistChecker {
                 group.Add(new RegistGroupEntity(reg[i]));
             }
 
-            RegistSet set = new RegistSet("自由検索", group.ToArray());
-            registsetList.Add(set);
-            (List<Dictionary<string, string>> bestList, List<Dictionary<string, string>> betterList) ret = combination.GetBestRegistEquip(registsetList);
-            DisplayResult(ret.betterList);
+            List<string> allPartsList = new List<string>();
+            if (group.Count > 0) {
+                RegistSet set = new RegistSet("自由検索", group.ToArray());
+                registsetList.Add(set);
+
+                List<List<string[]>> partsList = registsetList.Select(x => x.RegistEntityList.Select(y => y.Parts).ToList()).ToList();
+                for (int i = 0; i < partsList.Count; i++) {
+                    for (int j = 0; j < partsList[i].Count; j++) {
+                        allPartsList.AddRange(partsList[i][j]);
+                    }
+                }
+                allPartsList = allPartsList.Distinct().ToList();
+
+                (List<Dictionary<string, string>> bestList, List<Dictionary<string, string>> betterList) ret = combination.GetBestRegistEquip(registsetList, allPartsList);
+                DisplayResult(ret.betterList);
+            }
             seraching = false;
         }
 
