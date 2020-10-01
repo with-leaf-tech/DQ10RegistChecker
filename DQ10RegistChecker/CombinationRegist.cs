@@ -99,6 +99,7 @@ namespace DQ10RegistChecker {
             usePartsCount[Const.PARTS_UPBODY] = 0;
             usePartsCount[Const.PARTS_LOWBODY] = 0;
             usePartsCount[Const.PARTS_LEG] = 0;
+            usePartsCount[Const.PARTS_OTHER] = 0;
 
             List<int> maxCountList = new List<int>();
 

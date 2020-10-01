@@ -16,7 +16,7 @@ namespace DQ10RegistChecker {
         public DQ10RegistCheckerForm() {
             InitializeComponent();
 
-            checkedListBox1.Items.AddRange(Const.REGISTSET_LIST.Select(x => x.Name.PadRight(10 - (Encoding.GetEncoding("Shift_JIS").GetByteCount(x.Name) - x.Name.Length)) + "\t" + string.Join(",",x.RegistEntityList.Select(y => y.Name).ToArray())).ToArray());
+            checkedListBox1.Items.AddRange(Const.REGISTSET_LIST.Select(x => x.Name.PadRight(30 - (Encoding.GetEncoding("Shift_JIS").GetByteCount(x.Name) - x.Name.Length)) + "\t" + string.Join(",",x.RegistEntityList.Select(y => y.Name).ToArray())).ToArray());
             checkedListBox2.Items.AddRange(Const.REGIST_LIST.Select(x => x.name).ToArray());
         }
 
@@ -91,6 +91,9 @@ namespace DQ10RegistChecker {
                 }
                 if (betterList[i].ContainsKey(Const.PARTS_LEG)) {
                     sb.Append(Const.PARTS_LEG + "\t" + betterList[i][Const.PARTS_LEG] + Environment.NewLine);
+                }
+                if (betterList[i].ContainsKey(Const.PARTS_OTHER)) {
+                    sb.Append(Const.PARTS_OTHER + "\t" + betterList[i][Const.PARTS_OTHER] + Environment.NewLine);
                 }
                 sb.Append(Environment.NewLine);
             }
